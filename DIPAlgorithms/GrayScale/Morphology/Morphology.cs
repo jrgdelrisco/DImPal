@@ -30,48 +30,12 @@ namespace DIPAlgorithms.GrayScale.Morphology
 
         public static void WhiteTopHat(this RawGrayImage<byte> image)
         {
-            RawGrayImage<byte> copy = image.Clone() as RawGrayImage<byte>;
-            image.Open();
-
-            unsafe
-            {
-                fixed (byte* copyPtr = copy.Raw, rawFixed = image.Raw)
-                {
-                    byte* rawPtr = rawFixed;
-                    int length = image.Raw.Length;
-
-                    for (int i = 0; i < length; i++)
-                    {
-                        int sub = *(copyPtr + i) - *rawPtr;
-                        sub = sub < 0 ? 0 : sub;
-                        *rawPtr = (byte)sub;
-                        rawPtr++;
-                    }
-                }
-            }
+            TopHatTransform(image, true);
         }
 
         public static void BlackTopHat(this RawGrayImage<byte> image)
         {
-            RawGrayImage<byte> copy = image.Clone() as RawGrayImage<byte>;
-            image.Close();
-
-            unsafe
-            {
-                fixed (byte* copyPtr = copy.Raw, rawFixed = image.Raw)
-                {
-                    byte* rawPtr = rawFixed;
-                    int length = image.Raw.Length;
-
-                    for (int i = 0; i < length; i++)
-                    {
-                        int sub = *rawPtr - *(copyPtr + i);
-                        sub = sub < 0 ? 0 : sub;
-                        *rawPtr = (byte)sub;
-                        rawPtr++;
-                    }
-                }
-            }
+            TopHatTransform(image, false);
         }
 
         public static void Gradient(this RawGrayImage<byte> image)
@@ -125,6 +89,46 @@ namespace DIPAlgorithms.GrayScale.Morphology
 
                             *(rawPtr + position(i, j)) = (byte)grayValue;
                         }
+                    }
+                }
+            }
+        }
+
+        private static void TopHatTransform(RawGrayImage<byte> image, bool white)
+        {
+            RawGrayImage<byte> copy = image.Clone() as RawGrayImage<byte>;
+
+            if (white)
+            {
+                image.Open();
+            }
+            else
+            {
+                image.Close();
+            }
+
+            unsafe
+            {
+                fixed (byte* copyPtr = copy.Raw, rawFixed = image.Raw)
+                {
+                    byte* rawPtr = rawFixed;
+                    int length = image.Raw.Length;
+
+                    Func<int, int, int> op;
+                    if (white)
+                    {
+                        op = (a, b) => a - b;
+                    }
+                    else
+                    {
+                        op = (a, b) => b - a;
+                    }
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        int saturate = op(*(copyPtr + i), *rawPtr);
+                        *rawPtr = (byte)(Math.Max(0, saturate));
+                        rawPtr++;
                     }
                 }
             }
