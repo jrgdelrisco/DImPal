@@ -10,7 +10,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace PrototypingConsole
 {
-    class ImageLoader : IImageIO
+    class ImageLoader
     {
         public RawRgbaImage<byte> LoadRawRGBA(string path)
         {
