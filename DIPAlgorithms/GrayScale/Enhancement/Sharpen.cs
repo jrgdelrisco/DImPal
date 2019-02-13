@@ -33,8 +33,7 @@ namespace DIPAlgorithms.GrayScale.Enhancement
                     for (int i = 0; i < length; i++)
                     {
                         int add = *copyPtr + *(rawPtr + i);
-                        add = add > 255 ? 255 : add;
-                        *copyPtr = (byte)add;
+                        *copyPtr = (byte)(Math.Min(add, 255));
                         copyPtr++;
                     }
                 }
@@ -57,8 +56,7 @@ namespace DIPAlgorithms.GrayScale.Enhancement
                     for (int i = 0; i < length; i++)
                     {
                         int sub = *(copyPtr + i) - *rawPtr;
-                        sub = sub < 0 ? 0 : sub;
-                        *rawPtr = (byte)sub;
+                        *rawPtr = (byte)(Math.Max(0, sub));
                         rawPtr++;
                     }
                 }
