@@ -1,0 +1,12 @@
+﻿@{ 
+    ViewData["Title"] = "Results";
+}
+
+<h2>Results</h2>
+
+<div class="twentytwenty-container">
+    <!-- The before image is first -->
+    <img class="rounded" src='@Url.Action("GetImage", "Home")' />
+    <!-- The after image is last -->
+    <img class="rounded" src='@ViewBag.Image' />
+</div>

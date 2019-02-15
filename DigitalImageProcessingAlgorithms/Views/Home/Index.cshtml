@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Digital Image Processing Algorithms</h1>
+
+@*<h2>Select one image</h2>*@
+
+
+<img class="rounded img-fluid" src='@Url.Action("GetImage", "Home")' />
+
+
+@*<h2>Choose the algorithm to apply</h2>*@
+
+<hr />
+
+<a class="btn btn-primary" asp-action="Results">Run algorithm</a>
