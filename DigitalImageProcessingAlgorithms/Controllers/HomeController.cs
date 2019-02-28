@@ -5,17 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DigitalImageProcessingAlgorithms.Models;
-using SixLabors.ImageSharp;
-using DIPAlgorithms;
-using DIPAlgorithms.GrayScale.Enhancement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Runtime.InteropServices;
-using SixLabors.ImageSharp.Advanced;
-using SixLabors.ImageSharp.PixelFormats;
-using DIPAlgorithms.GrayScale.Morphology;
+using DigitalImageProcessingAlgorithms.Services;
 
 namespace DigitalImageProcessingAlgorithms.Controllers
 {
@@ -23,9 +16,11 @@ namespace DigitalImageProcessingAlgorithms.Controllers
     {
         private const string fileName = "cheetah.jpg";
         private readonly IFileProvider _fileProvider;
+        private readonly IFilterService _filterService;
 
-        public HomeController(IHostingEnvironment env)
+        public HomeController(IFilterService filterService, IHostingEnvironment env)
         {
+            _filterService = filterService;
             _fileProvider = env.WebRootFileProvider;
         }
 
@@ -45,29 +40,7 @@ namespace DigitalImageProcessingAlgorithms.Controllers
 
         public IActionResult Results()
         {
-            string path = PathString.FromUriComponent("/images/" + fileName);
-            IFileInfo fileInfo = _fileProvider.GetFileInfo(path);
-
-            if (!fileInfo.Exists)
-            {
-                return NotFound();
-            }
-
-            var outputStream = new MemoryStream();
-
-            using (var inputStream = fileInfo.CreateReadStream())
-            using (var image = Image.Load(inputStream))
-            {                
-                byte[] rgbaBytes = MemoryMarshal.AsBytes(image.GetPixelSpan()).ToArray();
-                RawRgbaImage<byte> rawImage = new RawRgbaImage<byte>(rgbaBytes, image.Width, image.Height);
-                RawGrayImage<byte> rawgray = Converter.RgbaToGray(rawImage);
-
-                rawgray.Gradient();
-                rawImage = Converter.GrayToRGBA(rawgray);
-                Image<Rgba32> result = Image.LoadPixelData<Rgba32>(rawImage.Raw, rawImage.Width, rawImage.Height);
-                ViewBag.Image = result.ToBase64String(ImageFormats.Jpeg);
-                result.Dispose();
-            }
+            ViewBag.Image = _filterService.ApplyFilter(fileName);
 
             return View();
         }
