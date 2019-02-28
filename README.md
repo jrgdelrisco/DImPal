@@ -24,4 +24,4 @@ An ASP.NET Core MVC web application that shows up all the implementations result
 
 For the web application go to **DigitalImageProcessingAlgorithms** and run `dotnet run` and follow console instructions.
 
-For the console application project run `dotnet run image_file_path.jpg` inside **PrototypingConsole** directory.
+For the console application project run `dotnet run /imagePath=path_to_image_file.jpg` inside **PrototypingConsole** directory.
